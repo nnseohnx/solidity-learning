@@ -46,10 +46,19 @@ describe("Basic state value check", () => {
     expect(await myTokenC.balanceOf(signer0)).equal(mintingAmount*10n**decimals);
   });
 });
-  it("should be reverted with insufficient balance error", async () => {
+describe("Transfer", () => {
+  it("should have 0.5MT", async () => {
+    const signer0 =  signers[0];
     const signer1 = signers[1];
-    });
-   it("should ", async () => {
+    await expect(await myTokenC.transfer(
+      hre.ethers.parseUnits("0.5", decimals),
+      signer1.address
+    )).to.emit(myTokenC, "Transfer").withArgs(signer0.address, signer1.address, hre.ethers.parseUnits("0.5", decimals));
+    expect(await myTokenC.balanceOf(signer1.address)).equal(
+      hre.ethers.parseUnits("0.5", decimals)
+    );
+});
+    it("should be reverted with insufficient balance error", async () => {
     const signer1 = signers[1];
     await expect(
      myTokenC.transfer(
@@ -58,4 +67,6 @@ describe("Basic state value check", () => {
      )
     ) .to.be.revertedWith('insufficient balance');
   });
+ });
 });
+
