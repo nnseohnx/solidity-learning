@@ -1,6 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.28;
 
+interface IMyToken{
+    function transfer(uint256 amount, address to) external;
+    function transfrom(address from, address to, uint256 amount) external;
+    function mint(uint256 amount, address owner) external;
+    
+    }
+
+
 contract MyToken {
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Approval(address indexed spender, uint256 amount);
@@ -33,12 +41,15 @@ contract MyToken {
     function transferFrom(address from, address to, uint256 amount) external {
         address spender = msg.sender;
         require(allowance[from][spender] >= amount, "insufficient allowance");
-       
         allowance[from][spender] -= amount;
         balanceOf[from] -= amount;
         balanceOf[to] += amount;
         emit Transfer(from, to, amount);
       }
+
+    function mint(uint256 amount, address owner) external{
+        _mint(amount,owner);
+    }  
 
     function _mint(uint256 amount, address owner) internal {
         totalSupply += amount;
