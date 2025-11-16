@@ -38,6 +38,7 @@ contract MyToken is ManagedAccess {
     function transferFrom(address from, address to, uint256 amount) external {
         address spender = msg.sender;
         require(allowance[from][spender] >= amount, "insufficient allowance");
+        require(balanceOf[from][spender] >= amount, "insufficient allowance");
         allowance[from][spender] -= amount;
         balanceOf[from] -= amount;
         balanceOf[to] += amount;
@@ -67,16 +68,4 @@ contract MyToken is ManagedAccess {
 
        emit Transfer(msg.sender, to, amount);
 }
-
-
-     function assignTransfer(address spender, uint256 amount) external {
-       
-        allowance[msg.sender][spender] = amount;
-        emit Approval(spender, amount);
-
-        require(allowance[msg.sender][spender] >= amount, "insufficient allowance");
-        balanceOf[msg.sender] -= amount;
-        balanceOf[spender] += amount;
-        emit Transfer(msg.sender, spender, amount);
-    }
 }
