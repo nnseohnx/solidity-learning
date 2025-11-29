@@ -1,13 +1,13 @@
 import hre from "hardhat";
 import { expect } from "chai";
 import { DECIMALS, MINTING_AMOUNT } from "./constant";
-import { MyToken, TinyBank } from "../typechain-types";
+import { MyToken } from "../typechain-types";
 import { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers";
 
 describe("TinyBank", () => {
   let signers: HardhatEthersSigner[];
   let myTokenC: MyToken;
-  let tinyBankC: TinyBank;
+  let tinyBankC: any;
 
   beforeEach(async () => {
     signers = await hre.ethers.getSigners();
@@ -29,7 +29,7 @@ describe("TinyBank", () => {
       managers,
     ]);
 
-    await myTokenC.setManager(await tinyBankC.getAddress());
+    await (myTokenC as any).setManager(await tinyBankC.getAddress());
   });
 
   describe("Initialized state check", () => {
