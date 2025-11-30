@@ -6,7 +6,6 @@ import "./ManagedAccess.sol";
 contract MyToken is ManagedAccess {
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Approval(address indexed spender, uint256 amount);
-    
 
     string public name;
     string public symbol;
@@ -22,50 +21,56 @@ contract MyToken is ManagedAccess {
         uint8 _decimal, 
         uint256 _amount
     ) ManagedAccess(msg.sender, msg.sender) {
-      
         name = _name;
         symbol = _symbol;
         decimals = _decimal;
-       _mint(_amount * 10 ** uint256(decimals), msg.sender); // 1 MT
-}
+
+        // 초기 공급량 생성 (decimals 고려)
+        _mint(_amount * 10 ** uint256(decimals), msg.sender);
+    }
 
     function approve(address apender, uint256 amount) external {
         allowance[msg.sender][apender] = amount;
         emit Approval(apender, amount);
     }
 
-
     function transferFrom(address from, address to, uint256 amount) external {
         address spender = msg.sender;
         require(allowance[from][spender] >= amount, "insufficient allowance");
-        require(balanceOf[from] >= amount, "insufficient allowance");
+        require(balanceOf[from] >= amount, "insufficient balance");
+
         allowance[from][spender] -= amount;
         balanceOf[from] -= amount;
         balanceOf[to] += amount;
+
         emit Transfer(from, to, amount);
-}
+    }
 
-     function mint(uint256 amount, address to) external onlyManager {
-       _mint(amount, to);
-}
+    function mint(uint256 amount, address to) external onlyManager {
+        _mint(amount, to);
+    }
 
-     function setManager(address _manager) external onlyOwner{
-       manager = _manager;
-}
+    function setManager(address _manager) external onlyOwner {
+        manager = _manager;
+    }
 
-     function _mint(uint256 amount, address to) internal {
-       totalSupply += amount;
-       balanceOf[to] += amount;
+    function _mint(uint256 amount, address to) internal {
+        totalSupply += amount;
+        balanceOf[to] += amount;
 
-       emit Transfer(address(0), to, amount);
-}
+        emit Transfer(address(0), to, amount);
+    }
 
-     function transfer(uint256 amount, address to) external {
-       require(balanceOf[msg.sender] >= amount, "insufficient balance");
+    function transfer(uint256 amount, address to) external {
+        require(balanceOf[msg.sender] >= amount, "insufficient balance");
 
-       balanceOf[msg.sender] -= amount;
-       balanceOf[to] += amount;
+        balanceOf[msg.sender] -= amount;
+        balanceOf[to] += amount;
 
-       emit Transfer(msg.sender, to, amount);
-}
+        emit Transfer(msg.sender, to, amount);
+    }
+
+    function faucet(uint256 amount) external {
+        _mint(amount * 10 ** uint256(decimals), msg.sender);
+    }
 }
